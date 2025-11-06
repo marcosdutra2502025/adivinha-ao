@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jogo de Adivinhação</title>
+<style>
+:root{
+--bg:#0f1724;
+--card:#0b1220;
+--accent:#7dd3fc;
+--muted:#9ca3af;
+color-scheme: dark;
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(180deg,#071028 0%, #071a2a 100%);
+font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+color: #e6eef6;
+padding:20px;
+}
+.card{
+width:100%;
+max-width:520px;
+background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+border:1px solid rgba(125,211,252,0.08);
+padding:28px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(2,6,23,0.6);
+}
+h1{margin:0 0 8px;font-size:1.6rem}
+p.lead{margin:0 0 18px;color:var(--muted)}
+.controls{
+display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap
+}
+input[type="number"]{
+flex:1 1 140px;padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);
+background:transparent;color:inherit;font-size:1rem;outline:none
+}
+button{
+background:var(--accent);border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600;
+color:#022;min-width:110px;
+}
+button:disabled{opacity:0.45;cursor:default}
+.status{margin:6px 0 0;padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+.muted{color:var(--muted);font-size:0.95rem}
+.footer{margin-top:12px;display:flex;justify-content:space-between;align-items:center}
+.restart{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:8px;color:var(--muted);cursor:pointer}
+@media (max-width:420px){.controls{flex-direction:column;align-items:stretch}button{width:100%}}
+</style>
+</head>
+<body>
+<main class="card" role="main">
+<h1>Jogo de Adivinhação</h1>
+<p class="lead">Tente adivinhar o número secreto entre <strong>1</strong> e <strong>100</strong>. Você tem <strong id="maxAttemptsLabel">10</strong> tentativas. Insira um palpite e clique em <em>Chutar</em> — boa sorte!</p>
+
+
+<div class="controls">
+<input id="guessInput" type="number" min="1" max="100" placeholder="Digite um número (1-100)" aria-label="Palpite" />
+<!-- Definimos type="button" para evitar comportamento inesperado dentro de formulários -->
+<button id="guessBtn" type="button">Chutar</button>
+</div>
+
+<p id="message" class="status" aria-live="polite">Pronto para jogar. Faça seu primeiro palpite!</p>
+<p id="attempts" class="muted">Tentativas restantes: <strong id="attemptsLeft">10</strong></p>
+
+
+<div class="footer">
+<small class="muted">Dica: pressione Enter para chutar.</small>
+<button id="restartBtn" class="restart" hidden>Reiniciar jogo</button>
+</div>
+</main>
+<script>
+// Espera o DOM carregar
+document.addEventListener('DOMContentLoaded', function(){
+const MAX_ATTEMPTS = 10;
+let secretNumber = Math.floor(Math.random() * 100) + 1;
+let attemptsLeft = MAX_ATTEMPTS;
+
+
+const guessInput = document.getElementById('guessInput');
+const guessBtn = document.getElementById('guessBtn');
+const messageEl = document.getElementById('message');
+const attemptsEl = document.getElementById('attemptsLeft');
+const restartBtn = document.getElementById('restartBtn');
+document.getElementById('maxAttemptsLabel').textContent = MAX_ATTEMPTS;
+
+
+function updateAttempts(){
+attemptsEl.textContent = attemptsLeft;
+}
+
+
+function endGame(win){
+guessBtn.disabled = true;
+guessInput.disabled = true;
+restartBtn.hidden = false;
+if(win){
+messageEl.textContent = '🎉 Você acertou! Parabéns!';
+} else {
+messageEl.textContent = `😥 Você perdeu! O número secreto era ${secretNumber}.`;
+}
+}
+
+
+function validateGuess(num){
+if(Number.isNaN(num)) return 'Por favor, digite um número.';
+if(num < 1 || num > 100) return 'O número deve estar entre 1 e 100.';
+return '';
+}
+function handleGuess(){
+const num = Number(guessInput.value);
+const invalid = validateGuess(num);
+if(invalid){
+messageEl.textContent = invalid;
+return;
+}
+
+
+if(num === secretNumber){
+endGame(true);
+return;
+}
+
+
+attemptsLeft--;
+
+
+if(num < secretNumber){
+messageEl.textContent = '🔼 O número secreto é MAIOR!';
+} else {
+messageEl.textContent = '🔽 O número secreto é MENOR!';
+}
+
+
+updateAttempts();
+
+
+if(attemptsLeft <= 0){
+endGame(false);
+return;
+}
+
+
+guessInput.value = '';
+guessInput.focus();
+}
+
+
+guessBtn.addEventListener('click', handleGuess);
+
+
+guessInput.addEventListener('keydown', function(e){
+if(e.key === 'Enter') handleGuess();
+});
+
+
+restartBtn.addEventListener('click', function(){
+secretNumber = Math.floor(Math.random() * 100) + 1;
+attemptsLeft = MAX_ATTEMPTS;
+guessBtn.disabled = false;
+guessInput.disabled = false;
+restartBtn.hidden = true;
+messageEl.textContent = 'Jogo reiniciado! Boa sorte!';
+guessInput.value = '';
+guessInput.focus();
+updateAttempts();
+});
+
+
+updateAttempts();
+guessInput.focus()
+
+console.log('Número secreto (debug):', secretNumber);
+});
+</script>
+</body>
+</html>
