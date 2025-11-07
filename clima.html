@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Previsão do Tempo</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(120deg, #89cff0, #ffffff);
+        text-align: center;
+        padding: 30px;
+    }
+
+    .container {
+        background: rgba(255,255,255,0.90);
+        padding: 25px;
+        border-radius: 15px;
+        width: 350px;
+        margin: auto;
+        box-shadow: 0 0 15px rgba(0,0,0,0.25);
+        animation: fade 0.4s ease;
+    }
+
+    @keyframes fade {
+        from {opacity: 0; transform: translateY(-10px);}
+        to {opacity: 1; transform: translateY(0);}
+    }
+
+    input, button {
+        width: 90%;
+        padding: 10px;
+        margin-top: 12px;
+        border-radius: 8px;
+        border: 1px solid #555;
+        font-size: 15px;
+    }
+
+    button {
+        background: #0078ff;
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+        font-size: 16px;
+    }
+
+    button:hover {
+        background: #005ad0;
+    }
+
+    .result {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+        min-height: 60px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Previsão do Tempo (Próximos 16 dias)</h2>
+
+    <input id="cidade" type="text" placeholder="Digite a cidade (Ex: São Bernardo do Campo)">
+    <input id="data" type="date">
+    <button id="buscar">Ver Previsão</button>
+
+    <div id="resultado" class="result"></div>
+</div>
+
+<script>
+document.getElementById("buscar").addEventListener("click", buscarCidade);
+
+async function buscarCidade(){
+    const cidade = document.getElementById("cidade").value.trim();
+    const dataEscolhida = document.getElementById("data").value;
+    const resultado = document.getElementById("resultado");
+
+    if(!cidade || !dataEscolhida){
+        alert("Preencha cidade e data!");
+        return;
+    }
+
+    resultado.innerHTML = "🔍 Localizando cidade...";
+
+    // ✅ Busca de cidade usando Nominatim (SEM API-KEY e sem bloqueio)
+    const geoURL = `https://nominatim.openstreetmap.org/search?format=json&limit=1&email=app@exemplo.com&q=${encodeURIComponent(cidade)}`;
+
+    let geo;
+    try {
+        geo = await fetch(geoURL).then(r => r.json());
+    } catch {
+        resultado.innerHTML = "❌ Erro ao buscar a cidade.";
+        return;
+    }
+
+    if(!geo || geo.length === 0){
+        resultado.innerHTML = "❌ Cidade não encontrada. Tente sem abreviações.";
+        return;
+    }
+
+    const lat = geo[0].lat;
+    const lon = geo[0].lon;
+
+    resultado.innerHTML = "⏳ Obtendo previsão do tempo...";
+
+    // ✅ Previsão Open-Meteo (sem chave)
+    const climaURL = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=America/Sao_Paulo`;
+
+    let clima;
+    try {
+        clima = await fetch(climaURL).then(r => r.json());
+    } catch {
+        resultado.innerHTML = "❌ Erro ao obter previsão.";
+        return;
+    }
+
+    // Verifica se a data escolhida está dentro dos 16 dias disponíveis
+    const index = clima.daily.time.indexOf(dataEscolhida);
+    if(index === -1){
+        resultado.innerHTML = "⚠️ A previsão só está disponível até 16 dias a partir de hoje.";
+        return;
+    }
+
+    const tMax = clima.daily.temperature_2m_max[index];
+    const tMin = clima.daily.temperature_2m_min[index];
+    const cod = clima.daily.weathercode[index];
+
+    const icones = {
+        0:"☀️ Céu limpo",1:"🌤 Quase limpo",2:"⛅ Parcialmente nublado",3:"☁️ Nublado",
+        45:"🌫 Névoa",48:"🌫 Névoa",51:"🌦 Chuvisco leve",61:"🌧 Chuva fraca",
+        63:"🌧🌧 Chuva moderada",71:"❄ Neve",95:"⛈ Tempestade"
+    };
+
+    resultado.innerHTML = `
+        📍 <b>${cidade}</b><br><br>
+        ${icones[cod] ?? "🌡 Tempo não identificado"}<br><br>
+        🌡 Máxima: <b>${tMax}°C</b><br>
+        🌡 Mínima: <b>${tMin}°C</b>
+    `;
+}
+</script>
+
+</body>
+</html>
