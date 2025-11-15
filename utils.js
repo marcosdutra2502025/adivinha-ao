@@ -2,7 +2,7 @@
 // Funções auxiliares da aplicação
 
 
-export const apiURL = "http://localhost:3000/clientes";
+export const apiURL = "https://crudcrud.com/api/b50173c9df6e4b419ef526903c5d7f91/clientes";
 
 
 // Função pura para criar elementos
