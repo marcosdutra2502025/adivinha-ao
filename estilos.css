@@ -1,0 +1,302 @@
+:root{
+    --bg:#0f1720;
+    --card:#0b1220;
+    --muted:#94a3b8;
+    --accent:#00aaff;
+    --accent-2:#6ee7b7;
+    --text:#e6eef6;
+    --max-width:1200px;
+    --gap:1.25rem;
+    --radius:12px;
+    --ff-base: 'Inter', system-ui, -apple-system, 'Helvetica Neue', Arial;
+}
+
+/* RESET */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    font-family:var(--ff-base);
+    background:linear-gradient(180deg,var(--bg),#071024);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+}
+
+.container{
+    width:90%;
+    max-width:var(--max-width);
+    margin:0 auto;
+}
+
+/* ======================================= */
+/* HEADER */
+/* ======================================= */
+
+.site-header{
+    position:sticky;
+    top:0;
+    z-index:40;
+    backdrop-filter: blur(6px);
+    background:rgba(6,10,17,0.6);
+    border-bottom:1px solid rgba(255,255,255,0.03);
+}
+
+.header-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:var(--gap);
+    padding:1rem 0;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+    text-decoration:none;
+    color:var(--text)
+}
+.logo svg{fill:var(--accent)}
+.logo-text{
+    font-weight:700;
+    font-size:1.05rem;
+}
+
+.main-nav ul{
+    display:flex;
+    gap:1rem;
+    list-style:none;
+    margin:0;
+    padding:0
+}
+
+.main-nav a{
+    color:var(--muted);
+    text-decoration:none;
+    padding:0.45rem 0.6rem;
+    border-radius:8px;
+    display:inline-block;
+    transition:0.2s;
+}
+.main-nav a:hover{
+    color:var(--text);
+    background:rgba(255,255,255,0.02);
+}
+
+.nav-toggle{
+    display:none;
+    border:0;
+    background:none;
+    padding:0.4rem;
+    border-radius:8px
+}
+.nav-toggle .hamburger{
+    width:28px;
+    height:2px;
+    background:var(--text);
+    position:relative
+}
+.nav-toggle .hamburger::before,
+.nav-toggle .hamburger::after{
+    content:'';
+    position:absolute;
+    width:28px;
+    height:2px;
+    left:0;
+    background:var(--text)
+}
+.nav-toggle .hamburger::before{top:-8px}
+.nav-toggle .hamburger::after{top:8px}
+
+/* MOBILE MENU */
+@media (max-width:768px){
+    .main-nav{
+        display:none;
+        position:absolute;
+        top:100%;
+        right:0;
+        width:200px;
+        background:#0b1120;
+        padding:1rem;
+        border-radius:0 0 10px 10px;
+    }
+    .main-nav.open{
+        display:block;
+    }
+    .main-nav ul{
+        flex-direction:column;
+        gap:0.8rem;
+    }
+
+    .nav-toggle{
+        display:block;
+    }
+}
+
+/* ======================================= */
+/* HERO / HOME */
+/* ======================================= */
+
+.hero{
+    padding:3.5rem 0;
+}
+
+.hero-inner{
+    display:flex;
+    align-items:center;
+    gap:2rem;
+}
+
+.hero-text h1{
+    font-size:2.2rem;
+    margin:0 0 1rem 0;
+}
+
+.hero-text .lead{
+    font-size:1.2rem;
+    color:var(--muted);
+    margin-bottom:1.8rem;
+}
+
+.btn.primary{
+    display:inline-block;
+    padding:0.9rem 1.6rem;
+    background:var(--accent);
+    color:#000;
+    border-radius:var(--radius);
+    font-weight:700;
+    text-decoration:none;
+}
+
+/* HERO mobile */
+@media (max-width:768px){
+    .hero-inner{
+        flex-direction:column;
+        text-align:center;
+    }
+    .hero-media img{
+        width:100%;
+        border-radius:var(--radius);
+    }
+}
+
+/* ======================================= */
+/* FORMULÁRIO DE CONTATO */
+/* ======================================= */
+
+
+#contato {
+  padding: 4rem 0;
+}
+
+form {
+  width: 100%;
+  max-width: 900px;         /* Ajuste máximo para não ficar gigante em telas enormes */
+  margin: 0 auto;
+  background: var(--card);
+  padding: 2.5rem;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  display: grid;
+  grid-template-columns: 1fr 1fr;  /* Forma de tabela */
+  gap: 1.5rem 2rem;                /* Espaçamento entre linhas e colunas */
+}
+
+/* Labels maiores */
+form label {
+  font-size: 1rem;
+  color: var(--text);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* Inputs grandes e proporcionais */
+form input,
+form textarea {
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #111a2b;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+/* Textarea ocupa a tela inteira */
+form textarea {
+  min-height: 160px;
+  resize: vertical;
+  grid-column: span 2;
+}
+
+/* Campos que devem ocupar 1 coluna */
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Botão ocupa largura total */
+form button {
+  grid-column: span 2;
+  padding: 1.2rem;
+  background: var(--accent);
+  border: 0;
+  border-radius: var(--radius);
+  color: #000;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+form button:hover {
+  background: var(--accent-2);
+  transform: translateY(-2px);
+}
+
+/* Responsivo (mobile) */
+@media (max-width: 700px) {
+  form {
+    grid-template-columns: 1fr;
+  }
+
+  form textarea,
+  form button {
+    grid-column: span 1;
+  }
+}
+.hero {
+    background: #0a1120;
+    padding: 4rem 0;
+}
+
+/* SOBRE — roxo escuro suave */
+#sobre {
+    background: #120f1b;
+    padding: 4rem 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* SERVIÇOS — azul petróleo */
+#servicos {
+    background: #0c1f28;
+    padding: 4rem 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* DEPOIMENTOS — cinza azulado */
+#depoimentos {
+    background: #1a1f29;
+    padding: 4rem 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* FOOTER — quase preto */
+footer {
+    background: #070b10;
+    padding: 3rem 0;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
